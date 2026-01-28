@@ -5,7 +5,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Header } from "@/components/Header"
+
 
 export default function SignInPage() {
   const router = useRouter()
@@ -20,7 +20,6 @@ export default function SignInPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
       
       <main className="flex flex-col items-center px-4 pt-20 pb-16">
         <h1 className="text-5xl font-bold text-black tracking-wide mb-16">
@@ -60,9 +59,9 @@ export default function SignInPage() {
           <div className="flex justify-center pt-6">
             <button
               type="submit"
-              className="px-14 py-3 bg-[#452829] text-white text-base font-medium rounded-full tracking-widest hover:bg-[#2D2D2D] transition-colors"
+              className="px-14 py-3 bg-[#452829] text-white text-base font-medium rounded-full tracking-widest hover:bg-[#785657] transition-colors"
             >
-              continue
+              sign in
             </button>
           </div>
         </form>

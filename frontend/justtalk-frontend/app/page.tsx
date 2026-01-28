@@ -52,12 +52,13 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       
-      <Header />
+      
       <main className="mx-auto max-w-4xl px-4 py-8">
         <div className="flex flex-col gap-6">
           {articles.map((article) => (
             <ArticleCard
-              key={article.id}
+              key={article.id} // ← React uses this for list rendering
+              id={article.id}   // ← ArticleCard component uses this for the link ex.เวลากดไปดูโพสงิ้
               author={article.author}
               title={article.title}
               date={article.date}

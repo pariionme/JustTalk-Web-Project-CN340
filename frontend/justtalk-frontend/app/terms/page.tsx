@@ -1,10 +1,8 @@
-import { Header } from "@/components/Header"
 
 export default function TermsOfServicePage() {
   return (
     <div className="min-h-screen bg-white">
-      <Header />
-      
+
       <main className="max-w-3xl mx-auto px-6 py-12">
         <h1 className="text-3xl font-bold text-[#3D3D3D] mb-8">Terms of Service</h1>
         
