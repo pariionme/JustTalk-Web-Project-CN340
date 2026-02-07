@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-// import { db } from '@/lib/firebaseAdmin'
+import { db } from '@/lib/firebaseAdmin'
 
 // Sign up
 export async function POST(request) {
@@ -18,6 +18,11 @@ export async function POST(request) {
         createdAt: new Date().toISOString()
         });
         */
+
+        const res =await db.collection('users').add({
+            ...body,
+            createdAt: new Date().toISOString()
+        });
 
         return NextResponse.json({ message: "User created successfully"})
     } catch (err) {

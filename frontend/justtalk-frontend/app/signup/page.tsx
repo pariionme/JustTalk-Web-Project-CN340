@@ -1,40 +1,123 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Swal from "sweetalert2";
+import { db } from "@/lib/firebase";
+import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { z } from "zod";
+import { auth } from "@/lib/firebase";
+import { signupAction } from "./action";
 
+const signupSchema = z.object({
+  email: z.string().email({ message: "Invalid email address." }).trim(),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters." })
+    .trim(),
+});
 
 export default function SignUpPage() {
-  const router = useRouter()
-  const [email, setEmail] = useState("")
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [createUser] = useCreateUserWithEmailAndPassword(auth);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (password !== confirmPassword) {
-      alert("Passwords don't match!")
-      return
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("username", username);
+
+    const result = signupSchema.safeParse(Object.fromEntries(formData));
+    if (!result.success) {
+      const errors = Object.values(result.error.flatten().fieldErrors).flat();
+      Swal.fire({
+        title: "Error!",
+        icon: "error",
+        text: errors.join(", "),
+        confirmButtonText: 'ok',
+      });
+      return;
     }
-    router.push("/")
-  }
+
+    
+    Swal.fire({
+      title: "Loading...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+
+    try {
+      const userCredential = await createUser(
+        result.data.email,
+        result.data.password,
+      );
+
+      if (!userCredential) {
+        Swal.fire({
+          title: "Error!",
+          icon: "error",
+          text: "Failed to create user",
+          confirmButtonText: 'ok',
+        });
+        return;
+      }
+
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        email: formData.get("email"),
+        username: formData.get("username"),
+        createdAt: new Date(),
+      });
+
+      const idToken = await userCredential.user.getIdToken();
+      const actionState = await signupAction(idToken);
+
+      if (actionState.success) {
+        router.push("/");
+      } else {
+        Swal.fire({
+          title: "Error!",
+          icon: "error",
+          text: actionState.error,
+          confirmButtonText: 'ok',
+        });
+      }
+      Swal.close()
+    } catch (error) {
+      Swal.close()
+      Swal.fire({
+        title: "Error!",
+        icon: "error",
+        text: error instanceof Error ? error.message : "Something went wrong",
+        confirmButtonText: 'ok',
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
-    
       <main className="flex flex-col items-center px-4 pt-20 pb-16">
         <h1 className="text-5xl font-bold text-black tracking-wide mb-10">
           Welcome!
         </h1>
         <p className="text-center text-lg text-[#3D3D3D] tracking-wide mb-5 max-w-md">
-          Create your account to start sharing your thoughts and ideas with the JustTalk community.
+          Create your account to start sharing your thoughts and ideas with the
+          JustTalk community.
         </p>
 
         <form onSubmit={handleSubmit} className="w-full max-w-md space-y-8">
           <div className="space-y-2">
-            <label htmlFor="email" className="block text-base font-bold text-[#3D3D3D]">
+            <label
+              htmlFor="email"
+              className="block text-base font-bold text-[#3D3D3D]"
+            >
               Your email
             </label>
             <input
@@ -49,7 +132,10 @@ export default function SignUpPage() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="username" className="block text-base font-bold text-[#3D3D3D]">
+            <label
+              htmlFor="username"
+              className="block text-base font-bold text-[#3D3D3D]"
+            >
               Username
             </label>
             <input
@@ -64,7 +150,10 @@ export default function SignUpPage() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="password" className="block text-base font-bold text-[#3D3D3D]">
+            <label
+              htmlFor="password"
+              className="block text-base font-bold text-[#3D3D3D]"
+            >
               Your password
             </label>
             <input
@@ -79,7 +168,10 @@ export default function SignUpPage() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="confirmPassword" className="block text-base font-bold text-[#3D3D3D]">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-base font-bold text-[#3D3D3D]"
+            >
               Confirm password
             </label>
             <input
@@ -106,12 +198,15 @@ export default function SignUpPage() {
         <div className="mt-20 text-center">
           <p className="text-sm text-[#3D3D3D]">
             <span className="font-medium">{"Already have an account? "}</span>
-            <Link href="/signin" className="underline font-medium hover:text-[#2D2D2D]">
+            <Link
+              href="/signin"
+              className="underline font-medium hover:text-[#2D2D2D]"
+            >
               Sign in
             </Link>
           </p>
           <p className="mt-3 text-xs text-[#3D3D3D]/80">
-            {"By clicking \"Create account\", you accept JustTalk's "}
+            {'By clicking "Create account", you accept JustTalk\'s '}
             <Link href="/terms" className="underline">
               Terms of Service
             </Link>
@@ -124,5 +219,5 @@ export default function SignUpPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

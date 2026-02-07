@@ -1,26 +1,93 @@
+"use client";
 
-"use client"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { loginAction } from "./action";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import Swal from "sweetalert2";
+import { z } from "zod";
+import { auth } from "@/lib/firebase";
 
-
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-
+const loginSchema = z.object({
+  email: z.string().email({ message: "Invalid email address." }).trim(),
+  password: z.string().trim(),
+});
 
 export default function SignInPage() {
-  const router = useRouter()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     // After sign in, redirect to home page
-    router.push("/")
-  }
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+
+    const result = loginSchema.safeParse(Object.fromEntries(formData));
+    if (!result.success) {
+      const errors = Object.values(result.error.flatten().fieldErrors).flat();
+      Swal.fire({
+        title: "Error!",
+        icon: "error",
+        text: "Email or Password incorrect",
+        confirmButtonText: "ok",
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: "Loading...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        result.data.email,
+        result.data.password,
+      );
+
+      if (!userCredential) {
+        Swal.fire({
+          title: "Error!",
+          icon: "error",
+          text: "Failed to create user",
+          confirmButtonText: "ok",
+        });
+        return;
+      }
+
+      const idToken = await userCredential.user.getIdToken();
+      const actionState = await loginAction(idToken);
+
+      if (actionState.success) {
+        window.location.href = "/";
+      } else {
+        Swal.fire({
+          title: "Error!",
+          icon: "error",
+          text: actionState.error,
+          confirmButtonText: "ok",
+        });
+      }
+      Swal.close();
+    } catch (error) {
+      Swal.close();
+      Swal.fire({
+        title: "Error!",
+        icon: "error",
+        text: "Email or Password incorrect",
+        confirmButtonText: "ok",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
-      
       <main className="flex flex-col items-center px-4 pt-20 pb-16">
         <h1 className="text-5xl font-bold text-black tracking-wide mb-16">
           You're back!
@@ -28,7 +95,10 @@ export default function SignInPage() {
 
         <form onSubmit={handleSubmit} className="w-full max-w-md space-y-8">
           <div className="space-y-2">
-            <label htmlFor="email" className="block text-base font-bold text-[#3D3D3D]">
+            <label
+              htmlFor="email"
+              className="block text-base font-bold text-[#3D3D3D]"
+            >
               Your email
             </label>
             <input
@@ -42,7 +112,10 @@ export default function SignInPage() {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="password" className="block text-base font-bold text-[#3D3D3D]">
+            <label
+              htmlFor="password"
+              className="block text-base font-bold text-[#3D3D3D]"
+            >
               Your password
             </label>
             <input
@@ -69,12 +142,15 @@ export default function SignInPage() {
         <div className="mt-20 text-center">
           <p className="text-sm text-[#3D3D3D]">
             <span className="font-medium">{"Already have an account? "}</span>
-            <Link href="/signup" className="underline font-medium hover:text-[#2D2D2D]">
+            <Link
+              href="/signup"
+              className="underline font-medium hover:text-[#2D2D2D]"
+            >
               Sign up
             </Link>
           </p>
           <p className="mt-3 text-xs text-[#3D3D3D]/80">
-            {"By clicking \"Sign up\", you accept JustTalk's "}
+            {'By clicking "Sign up", you accept JustTalk\'s '}
             <Link href="/terms" className="underline">
               Terms of Service
             </Link>
@@ -87,5 +163,5 @@ export default function SignInPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

@@ -1,26 +1,35 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { useRouter, usePathname } from "next/navigation"
-import { Dispatch, SetStateAction } from "react"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { useRouter, usePathname } from "next/navigation";
+import { Dispatch, SetStateAction } from "react";
+import { logoutAction } from "@/app/signin/action";
+import Swal from "sweetalert2";
 
 interface HeaderProps {
-  isLoggedIn?: boolean
-  setIsLoggedIn?: Dispatch<SetStateAction<boolean>>
+  isLoggedIn?: boolean;
+  setIsLoggedIn?: Dispatch<SetStateAction<boolean>>;
 }
 
-export function Header({ isLoggedIn = false, setIsLoggedIn }: HeaderProps) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const showBackButton = pathname !== "/"
+export function Header({ isLoggedIn }: HeaderProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const showBackButton = pathname !== "/";
 
-  const handleSignOut = () => {
-    localStorage.removeItem("token")
-    setIsLoggedIn?.(false)
-    router.push("/")
-  }
+  const handleSignOut = async () => {
+    //localStorage.removeItem("token")
+
+    try {
+      const result = await logoutAction();
+      if (result.success) {
+        window.location.href = "/";
+      }
+    } catch (err) {
+      console.error("Logout Error: ", err);
+    }
+  };
 
   return (
     <header className="bg-cream">
@@ -65,5 +74,5 @@ export function Header({ isLoggedIn = false, setIsLoggedIn }: HeaderProps) {
         )}
       </div>
     </header>
-  )
+  );
 }
