@@ -1,11 +1,12 @@
-import { notFound } from "next/navigation"
-
+import { getArticleById, getAuthorById } from "@/app/action/getArticleAction";
+import { notFound } from "next/navigation";
 
 const articles = [
   {
     id: 1,
     author: "Will Locett",
-    title: "The AI Bubble Is About To Burst, But The Next Bubble Is Already Growing",
+    title:
+      "The AI Bubble Is About To Burst, But The Next Bubble Is Already Growing",
     date: "Sep 15, 2025",
     content: `Speculation rules the world. It didn't used to. But from the 1980s through to 2008, 
     something changed. Investors realised that they could get far more return from hype than from 
@@ -57,7 +58,8 @@ const articles = [
   {
     id: 5,
     author: "Daniel Kim",
-    title: "Texting All Day, Saying Nothing: The Cost of Constant Communication",
+    title:
+      "Texting All Day, Saying Nothing: The Cost of Constant Communication",
     date: "Jun 19, 2025",
     content: `We send hundreds of messages a day. Quick texts, emoji reactions, GIF responses. 
     We're in constant contact with friends, family, and colleagues. But how many of those exchanges actually mean something? 
@@ -88,30 +90,29 @@ const articles = [
     Trust builds. Real understanding emerges. In a world that demands constant stimulation, 
     choosing to slow down our conversations might be the most radical—and rewarding—choice we can make.`,
   },
-]
+];
 
 interface PostPageProps {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }
 
 export default async function PostPage({ params }: PostPageProps) {
-  const { id } = await params
-  const article = articles.find((a) => a.id === Number.parseInt(id))
+  const { id } = await params;
+  const article = await getArticleById(id);
 
   if (!article) {
-    notFound()
+    notFound();
   }
 
   return (
     <div className="min-h-screen bg-background">
-
       <main className="mx-auto max-w-3xl px-4 py-12">
         <article>
           <h1 className="text-3xl md:text-4xl font-bold text-foreground leading-tight mb-4 text-balance">
             {article.title}
           </h1>
           <p className="text-sm text-muted-foreground mb-8">
-            {article.author} · {article.date}
+            {article.username ? article.username : "unknown"} · {article.createdAt}
           </p>
           <div className="prose prose-lg max-w-none">
             <p className="text-foreground leading-relaxed text-base md:text-lg">
@@ -121,5 +122,5 @@ export default async function PostPage({ params }: PostPageProps) {
         </article>
       </main>
     </div>
-  )
+  );
 }

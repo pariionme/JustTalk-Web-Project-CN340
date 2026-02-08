@@ -31,6 +31,14 @@ export async function deleteSession() {
   return { success: true };
 }
 
+export async function getSession() {
+  const userSession = (await cookies()).get("session");
+
+  if (!userSession) return  { success: false }
+
+  return { success: true, session: userSession}
+}
+
 type SessionPayload = {
   userId: string;
   expiresAt: Date;

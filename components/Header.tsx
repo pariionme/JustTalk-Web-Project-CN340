@@ -5,8 +5,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useRouter, usePathname } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
-import { logoutAction } from "@/app/signin/action";
+import { logoutAction } from "@/app/action/signInAction";
 import Swal from "sweetalert2";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 interface HeaderProps {
   isLoggedIn?: boolean;
@@ -19,14 +21,15 @@ export function Header({ isLoggedIn }: HeaderProps) {
   const showBackButton = pathname !== "/";
 
   const handleSignOut = async () => {
-    //localStorage.removeItem("token")
-
     try {
+      await signOut(auth);
+
       const result = await logoutAction();
-      if (result.success) {
+      if (result) {
         window.location.href = "/";
       }
     } catch (err) {
+      alert("Logout Error: "+err)
       console.error("Logout Error: ", err);
     }
   };

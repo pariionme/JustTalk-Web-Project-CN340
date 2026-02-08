@@ -9,7 +9,7 @@ import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { z } from "zod";
 import { auth } from "@/lib/firebase";
-import { signupAction } from "./action";
+import { signupAction } from "../action/signUpAction";
 
 const signupSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }).trim(),

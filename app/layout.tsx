@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import ClientLayout from "./ClientLayout"
 import { cookies } from "next/headers"
+import { getSession } from "@/lib/session"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,11 +25,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const sessionCookie = (await cookies()).get("session")?.value
+  const sessionCookie = await getSession();
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ClientLayout initialSession={sessionCookie}>{children}</ClientLayout>
+        <ClientLayout initialSession={sessionCookie.success}>{children}</ClientLayout>
       </body>
     </html>
   )
