@@ -114,7 +114,7 @@ export default async function PostPage({ params }: PostPageProps) {
           <h1 className="text-3xl md:text-4xl font-bold text-foreground leading-tight mb-4 text-balance">
             {article.title}
           </h1>
-          {/* Format createdAt (ISO string) into a human-friendly date */}
+          {/* Format createdAt (ISO string) */}
           {(() => {
             const createdAt = article.createdAt ? new Date(article.createdAt) : null;
             const formattedDate = createdAt
