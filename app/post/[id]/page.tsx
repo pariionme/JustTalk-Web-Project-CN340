@@ -1,6 +1,7 @@
 import { getArticleById, getAuthorById } from "@/app/action/getArticleAction";
 import { notFound } from "next/navigation";
 
+// sample data for testing, will be removed when connected to database
 const articles = [
   {
     id: 1,
@@ -104,6 +105,8 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound();
   }
 
+
+
   return (
     <div className="min-h-screen bg-background">
       <main className="mx-auto max-w-3xl px-4 py-12">
@@ -111,9 +114,23 @@ export default async function PostPage({ params }: PostPageProps) {
           <h1 className="text-3xl md:text-4xl font-bold text-foreground leading-tight mb-4 text-balance">
             {article.title}
           </h1>
-          <p className="text-sm text-muted-foreground mb-8">
-            {article.username ? article.username : "unknown"} · {article.createdAt}
-          </p>
+          {/* Format createdAt (ISO string) into a human-friendly date */}
+          {(() => {
+            const createdAt = article.createdAt ? new Date(article.createdAt) : null;
+            const formattedDate = createdAt
+              ? createdAt.toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })
+              : "Unknown date";
+
+            return (
+              <p className="text-sm text-muted-foreground mb-8">
+                {article.username ? article.username : "unknown"} · {formattedDate}
+              </p>
+            );
+          })()}
           <div className="prose prose-lg max-w-none">
             <p className="text-foreground leading-relaxed text-base md:text-lg">
               {article.content}

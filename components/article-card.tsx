@@ -5,10 +5,11 @@ interface ArticleCardProps {
   id: string
   author: string
   title: string
-  date: string
+  date: string | null
 }
 
 export function ArticleCard({ id, author, title, date }: ArticleCardProps) {
+
   return (
     <Link href={`/post/${id}`}>
       <article className="

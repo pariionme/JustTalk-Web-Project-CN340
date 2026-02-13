@@ -1,6 +1,5 @@
 "use client";
 
-import { Header } from "@/components/Header";
 import { ArticleCard } from "@/components/article-card";
 import { db } from "@/lib/firebase";
 import {
@@ -20,7 +19,7 @@ interface Article {
   title: string;
   content: string;
   authorId: string;
-  createdAt: any;
+  createdAt: string | null;
   username: string;
 }
 
@@ -103,21 +102,34 @@ export default function Home() {
           }
         });
 
-        const articles: Article[] = snapshot.docs.map(articleDoc => {
+        const articles: Article[] = snapshot.docs.map((articleDoc) => {
           const articleData = articleDoc.data();
-          const authorData = authorsMap[articleData.authorId]
+          const authorData = authorsMap[articleData.authorId];
 
-          return{
+          const createdAt =
+            articleData.createdAt instanceof Timestamp
+              ? articleData.createdAt.toDate()
+              : null;
+              
+          // Format date
+          const formattedDate = createdAt
+            ? createdAt.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })
+            : "Unknown date";
+
+          return {
             id: articleDoc.id,
             title: articleData.title,
             content: articleData.content,
             authorId: articleData.authorId,
-            createdAt: articleData.createdAt instanceof Timestamp
-            ? articleData.createdAt.toDate().toISOString()
-            : null,
+            createdAt: formattedDate,
             username: authorData?.username || "unknown",
-          }
-        })
+          };
+        });
+
 
         setPageArticles(articles)
         setLoading(false)
