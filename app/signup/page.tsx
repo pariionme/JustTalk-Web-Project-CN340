@@ -42,20 +42,21 @@ export default function SignUpPage() {
         title: "Error!",
         icon: "error",
         text: errors.join(", "),
-        confirmButtonText: 'ok',
+        confirmButtonText: "ok",
       });
       return;
     }
 
-    
     Swal.fire({
       title: "Loading...",
       allowOutsideClick: false,
       didOpen: () => Swal.showLoading(),
     });
 
+    let userCredential = null;
+
     try {
-      const userCredential = await createUser(
+      userCredential = await createUser(
         result.data.email,
         result.data.password,
       );
@@ -65,12 +66,12 @@ export default function SignUpPage() {
           title: "Error!",
           icon: "error",
           text: "Failed to create user",
-          confirmButtonText: 'ok',
+          confirmButtonText: "ok",
         });
         return;
       }
 
-      await setDoc(doc(db, "users", userCredential.user.uid), {
+      await setDoc(doc(db, "user", userCredential.user.uid), {
         email: formData.get("email"),
         username: formData.get("username"),
         createdAt: new Date(),
@@ -86,18 +87,26 @@ export default function SignUpPage() {
           title: "Error!",
           icon: "error",
           text: actionState.error,
-          confirmButtonText: 'ok',
+          confirmButtonText: "ok",
         });
+
+        console.error("Failed to add user to database. ", actionState.error);
+
+        await userCredential?.user.delete();
       }
-      Swal.close()
+      Swal.close();
     } catch (error) {
-      Swal.close()
+      Swal.close();
       Swal.fire({
         title: "Error!",
         icon: "error",
         text: error instanceof Error ? error.message : "Something went wrong",
-        confirmButtonText: 'ok',
+        confirmButtonText: "ok",
       });
+      if (userCredential?.user) {
+        await userCredential?.user.delete();
+      }
+      console.error("Sign up failed. ", error);
     }
   };
 
