@@ -71,7 +71,7 @@ export default function SignUpPage() {
         return;
       }
 
-      await setDoc(doc(db, "user", userCredential.user.uid), {
+      await setDoc(doc(db, "users", userCredential.user.uid), {
         email: formData.get("email"),
         username: formData.get("username"),
         createdAt: new Date(),
