@@ -27,6 +27,7 @@ interface UserData {
   username: string;
 }
 
+// Dummy data for testing without Firebase
 const articlesdummy = [
   {
     id: "1",

@@ -1,5 +1,6 @@
 import { getArticleById, getAuthorById } from "@/app/action/getArticleAction";
 import { notFound } from "next/navigation";
+import { CommentSection } from "@/components/CommentSection";
 
 // sample data for testing, will be removed when connected to database
 const articles = [
@@ -137,6 +138,7 @@ export default async function PostPage({ params }: PostPageProps) {
             </p>
           </div>
         </article>
+        <CommentSection />
       </main>
     </div>
   );
