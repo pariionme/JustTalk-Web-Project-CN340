@@ -1,6 +1,7 @@
 import { getArticleById, getAuthorById } from "@/app/action/getArticleAction";
 import { notFound } from "next/navigation";
 import { CommentSection } from "@/components/CommentSection";
+import { EditButton } from "@/components/EditBotton";
 
 // sample data for testing, will be removed when connected to database
 const articles = [
@@ -112,9 +113,18 @@ export default async function PostPage({ params }: PostPageProps) {
     <div className="min-h-screen bg-background">
       <main className="mx-auto max-w-3xl px-4 py-12">
         <article>
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground leading-tight mb-4 text-balance">
-            {article.title}
-          </h1>
+          {/* Post Title and Edit Button */}
+          <div className="flex items-start justify-between mb-4">  
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground leading-tight text-balance">
+              {article.title}
+            </h1>
+
+            <EditButton 
+              postId={article.id} 
+              articleUserId={article.authorId}
+            />
+          </div>
+
           {/* Format createdAt (ISO string) */}
           {(() => {
             const createdAt = article.createdAt ? new Date(article.createdAt) : null;

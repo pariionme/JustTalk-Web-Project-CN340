@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useRouter, usePathname } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
 import { logoutAction } from "@/app/action/signInAction";
-import Swal from "sweetalert2";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 

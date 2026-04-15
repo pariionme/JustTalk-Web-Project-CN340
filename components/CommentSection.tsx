@@ -8,11 +8,10 @@ import { useAuth } from "@/context/AuthContext"
 
 
 export function CommentSection() {
-  const router = useRouter()
+  // const router = useRouter()
   const { isLoggedIn, isHydrated , user} = useAuth()
   
   
-
   // const [comments, setComments] = useState<string[]>([]) อันนี้ไม่มีชื่อยุสเส่อเนม
   const [comments, setComments] = useState< // แบบนี้มีชื่อยุสเซ่อเนม
     { text: string; username: string; createdAt: string }[]
