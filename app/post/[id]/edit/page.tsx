@@ -48,11 +48,17 @@ export default function EditPostPage() {
         e.preventDefault()
         setLoading(true)
 
-        // TODO: replace with real API
-        console.log("updated:", { title, content })
+        try {
+          // use post id as key -> update new title, content, updatedAt 
 
+        } catch (e) {
+          console.error("Failed to send edited article: ", e)
+        } finally {
         setLoading(false)
+        // TODO: replace with real API
+        // console.log("updated:", { title, content })
         router.push(`/post/${id}`)
+        }
     }
 
     if (!isHydrated) return null
