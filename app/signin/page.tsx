@@ -8,6 +8,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import Swal from "sweetalert2";
 import { z } from "zod";
 import { auth } from "@/lib/firebase";
+import { clearHomeCache } from "../action/clearCache";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }).trim(),
@@ -65,7 +66,8 @@ export default function SignInPage() {
       const actionState = await loginAction(idToken);
 
       if (actionState.success) {
-        window.location.href = "/";
+        await clearHomeCache()
+        router.replace("/")
       } else {
         Swal.fire({
           title: "Error!",

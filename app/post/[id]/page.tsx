@@ -58,7 +58,7 @@ export default async function PostPage({ params }: PostPageProps) {
           </div>
         </article>
         <CommentSection 
-        id={id}
+        postID={id}
         />
       </main>
     </div>

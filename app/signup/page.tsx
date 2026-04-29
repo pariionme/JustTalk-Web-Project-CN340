@@ -10,6 +10,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { z } from "zod";
 import { auth } from "@/lib/firebase";
 import { signupAction } from "../action/signUpAction";
+import { clearHomeCache } from "../action/clearCache";
 
 const signupSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }).trim(),
@@ -81,7 +82,8 @@ export default function SignUpPage() {
       const actionState = await signupAction(idToken);
 
       if (actionState.success) {
-        router.push("/");
+        await clearHomeCache()
+        router.replace("/");
       } else {
         Swal.fire({
           title: "Error!",

@@ -25,7 +25,7 @@ export function Header({ isLoggedIn }: HeaderProps) {
 
       const result = await logoutAction();
       if (result) {
-        window.location.href = "/";
+        router.push("/");
       }
     } catch (err) {
       alert("Logout Error: "+err)
