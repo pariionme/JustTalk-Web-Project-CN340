@@ -35,13 +35,13 @@ export function Header({ isLoggedIn }: HeaderProps) {
 
   return (
     <header className="bg-cream">
-      <div className="mx-auto flex max-w-8xl items-center justify-between px-6 py-4">
-        <Link
-          href="/"
-          className="font-serif text-4xl font-light italic text-black"
-          style={{ textShadow: "0 2px 4px rgba(0,0,0,0.25)" }}
-        >
-          JustTalk
+      <div className="w-full flex items-center justify-between px-6 py-4">
+        <Link href="/">
+          <img
+            src="/JustTalkLogo1_Transparent.png"
+            alt="JustTalk Logo"
+            className="h-12 w-auto"
+          />
         </Link>
 
         {isLoggedIn ? (
