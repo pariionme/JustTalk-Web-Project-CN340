@@ -3,9 +3,10 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Trash2 } from "lucide-react"
-import { deleteDoc, doc } from "firebase/firestore"
+import { collection, deleteDoc, doc, getDocs, query, where, writeBatch } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { useAuth } from "@/context/AuthContext"
+import { clearHomeCache } from "@/app/action/clearCache"
 
 interface DeleteButtonProps {
   postId: string
@@ -24,7 +25,23 @@ export function DeleteButton({ postId, articleUserId }: DeleteButtonProps) {
 
   const handleDelete = async () => {
     try {
-      await deleteDoc(doc(db, "articles", postId))
+      // we also need to delete comment in that article too
+      const batch = writeBatch(db)
+      const articleRef = doc(db, "articles", postId)
+      batch.delete(articleRef)
+
+      const commentsRef = collection(db, "comments")
+      const q = query(commentsRef, where("articleId", "==", postId))
+      const commentsSnapshot = await getDocs(q)
+
+      commentsSnapshot.forEach((commentDoc) => {
+        batch.delete(commentDoc.ref)
+      })
+
+      // run batch
+
+      await batch.commit();
+
       setShowConfirm(false)
       setShowSuccess(true)
     } catch (error) {
@@ -75,7 +92,12 @@ export function DeleteButton({ postId, articleUserId }: DeleteButtonProps) {
             <p>Post deleted successfully :D</p>
 
             <button
-              onClick={() => router.push("/")}
+              onClick={async () => {
+                // call clear cache and use replace
+                await clearHomeCache()
+                router.replace("/")
+              }}
+
               className="px-6 py-2 bg-[#3D3027] text-white rounded-full hover:bg-[#785657] transition-colors"
             >
               OK
