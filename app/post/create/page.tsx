@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { useAuth } from "@/context/AuthContext";
+import { clearHomeCache } from "@/app/action/clearCache";
+import Swal from "sweetalert2";
 
 export default function CreatePostPage() {
   const router = useRouter();
@@ -55,16 +56,16 @@ export default function CreatePostPage() {
         updatedAt: serverTimestamp(),
       });
 
-      setShowSuccess(true);
-      // alert('Article created successfully!')
-      // router.push('/');
-      
+      //alert
+      Swal.fire({
+        title: "Create article successfully!",
+      })
+
+      await clearHomeCache();
+      router.push('/');
     } catch (error) {
       console.error("Error creating article:", error);
       alert("Failed to create article");
-    } finally {
-      setLoading(false);
-      //loading == false
     }
   };
 

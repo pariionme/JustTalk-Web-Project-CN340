@@ -9,12 +9,16 @@ import { addDoc, collection, documentId, getDoc, getDocs, query, serverTimestamp
 import { db } from "@/lib/firebase"
 import { getAuthorById } from "@/app/action/getArticleAction"
 import { convertISO } from "@/hook/convertISO"
+import { clearArticleCache } from "@/app/action/clearCache"
+
+interface CommentSectionProps {
+  postID: string;
+}
 
 
-export function CommentSection(postID: string) {
+export function CommentSection({postID}: CommentSectionProps) {
   // const router = useRouter()
   const { isLoggedIn, isHydrated, user } = useAuth()
-
 
   // const [comments, setComments] = useState<string[]>([]) อันนี้ไม่มีชื่อยุสเส่อเนม
   const [comments, setComments] = useState< // แบบนี้มีชื่อยุสเซ่อเนม
@@ -83,7 +87,8 @@ export function CommentSection(postID: string) {
       ]);
     } catch (e) {
       console.error("Error upload comment: ", e)
-    } finally {
+    } finally {      
+      await clearArticleCache(postID)
       setInput("");
     }
 
