@@ -43,13 +43,22 @@ export function Header({ isLoggedIn }: HeaderProps) {
             className="h-12 w-auto"
           />
         </Link>
+        
+        {showBackButton ? (
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="rounded-full px-6 py-3 bg-brown text-white text-sm font-medium tracking-widest hover:bg-[#785657] transition-colors"
+          >
+            BACK
+          </button>
 
-        {isLoggedIn ? (
+        ) : isLoggedIn ? (
           <div className="flex gap-3">
             <Link href="/post/create">
-              <Button className="rounded-full bg-brown px-6 py-3 text-white text-sm font-medium tracking-widest hover:bg-[#785657] transition-colors">
+              <button className="rounded-full bg-brown px-6 py-3 text-white text-sm font-medium tracking-widest hover:bg-[#785657] transition-colors">
                 CREATE POST
-              </Button>
+              </button>
             </Link>
             <button
               type="button"
@@ -59,14 +68,6 @@ export function Header({ isLoggedIn }: HeaderProps) {
               SIGN OUT
             </button>
           </div>
-        ) : showBackButton ? (
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="rounded-full px-6 py-3 bg-brown text-white text-sm font-medium tracking-widest hover:bg-[#785657] transition-colors"
-          >
-            BACK
-          </button>
         ) : (
           <Link href="/signin">
             <Button className="rounded-full px-6 py-3 bg-brown text-white text-sm font-medium tracking-widest hover:bg-[#785657] transition-colors">

@@ -2,6 +2,7 @@ import { getArticleById, getAuthorById } from "@/app/action/getArticleAction";
 import { notFound } from "next/navigation";
 import { CommentSection } from "@/components/CommentSection";
 import { EditButton } from "@/components/EditBotton";
+import { DeleteButton } from "@/components/DeleteComponent";
 
 // sample data for testing, will be removed when connected to database
 const articles = [
@@ -119,10 +120,17 @@ export default async function PostPage({ params }: PostPageProps) {
               {article.title}
             </h1>
 
-            <EditButton 
-              postId={article.id} 
-              articleUserId={article.authorId}
-            />
+            <div className="flex items-center gap-2">
+              <EditButton 
+                postId={article.id} 
+                articleUserId={article.authorId}
+              />
+
+              <DeleteButton
+                postId={article.id}
+                articleUserId={article.authorId}
+              />
+            </div>
           </div>
 
           {/* Format createdAt (ISO string) */}
